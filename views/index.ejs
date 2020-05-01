@@ -4,7 +4,6 @@
     <title>Meet Queue</title>
     <link rel="stylesheet" type="text/css" href="./output.css">
     <script src="../../socket.io/socket.io.js"></script>
-    <!-- <script src="http://code.jquery.com/jquery&#45;1.10.1.min.js"></script> -->
   </head>
   <body>
     <h1>Next up:</h1>
@@ -15,9 +14,25 @@
       const username = prompt('Who r u')
       socket.emit('username', username)
 
-      socket.on('enqueue', function(username) {
-        document.getElementById('queue').append(username, document.createElement('li'))
+      socket.on('received_reservations', function(reservations) {
+        reservations.forEach(r => {
+          createListItem(r.username)
+        })
       })
+
+      socket.on('enqueue', function(username) {
+        createListItem(username)
+      })
+
+      window.addEventListener('DOMContentLoaded', () => {
+        socket.emit('loaded')
+      })
+
+      const createListItem = (value) => {
+        li = document.createElement('li')
+        li.innerHTML = value
+        document.getElementById('queue').append(li)
+      }
     </script>
   </body>
 </html>

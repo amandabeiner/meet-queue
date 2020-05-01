@@ -3,26 +3,61 @@ const admin = require('firebase-admin')
 const app = express()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
+const url = require('url')
+require('dotenv').config()
 
-app.get('/', function(req, res) {
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
+})
+
+app.get('*', function (req, res) {
   res.render('index.ejs')
 })
 
-io.sockets.on('connection', function(socket) {
-  const queue = []
+app.use(express.static(__dirname))
+http.listen(8080, function () {
+  console.log('listening on port 8080')
+})
 
-  socket.on('username', function(username) {
+io.sockets.on('connection', function (socket) {
+  socket.on('loaded', async function () {
+    const url = getUrlPath(socket)
+    const existingReservations = await findReservations(url)
+    socket.emit('received_reservations', existingReservations)
+  })
+
+  socket.on('username', function (username) {
     socket.username = username
   })
 
-  socket.on('enqueue', function() {
-    queue.push(socket.username)
-    console.log(socket.queue)
+  socket.on('enqueue', function () {
+    createReservation(socket.username, getUrlPath(socket))
     io.emit('enqueue', socket.username)
   })
 })
 
-app.use(express.static(__dirname))
-http.listen(8080, function() {
-  console.log('listening on port 8080')
-})
+const getUrlPath = (socket) => {
+  return url.parse(socket.handshake.headers.referer).path
+}
+
+const findReservations = async (urlPath) => {
+  const collectionSnapshot = await admin
+    .firestore()
+    .collection('queues')
+    .doc(urlPath)
+    .collection('reservations')
+    .get()
+
+  return collectionSnapshot.docs.map((d) => d.data())
+}
+
+const createReservation = (username, urlpath) => {
+  admin
+    .firestore()
+    .collection('queues')
+    .doc(urlpath)
+    .collection('reservations')
+    .doc(Date.now().toString())
+    .set({ username, createdAt: Date.now() })
+}
