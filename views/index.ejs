@@ -4,15 +4,43 @@
     <title>Meet Queue</title>
     <link rel="stylesheet" type="text/css" href="./output.css">
     <script src="../../socket.io/socket.io.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-auth.js"></script>
   </head>
   <body>
-    <h1>Next up:</h1>
+    <h1 class="text-red-900">Next up:</h1>
     <ul id="queue"></ul>
     <button id="enqueue" onclick="socket.emit('enqueue')">Raise hand</button>
     <script>
+      var firebaseConfig = {
+        apiKey: "AIzaSyAGDcE1JIePpzJ66lRlIKDyY87aykZNjQ8",
+        authDomain: "meet-queue.firebaseapp.com",
+        databaseURL: "https://meet-queue.firebaseio.com",
+        projectId: "meet-queue",
+        storageBucket: "meet-queue.appspot.com",
+        messagingSenderId: "539893296334",
+        appId: "1:539893296334:web:b604f203bc04fe8825b49f",
+        measurementId: "G-19MMWPTZ20"
+      };
+
+      firebase.initializeApp(firebaseConfig)
+
       const socket = io.connect('http://localhost:8080')
-      const username = prompt('Who r u')
-      socket.emit('username', username)
+      
+      const provider = new firebase.auth.GoogleAuthProvider()
+
+
+
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          socket.emit('signed_in', user.displayName)
+        } else {
+          firebase.auth().signInWithPopup(provider).then((result) => {
+            const user = result.user.displayName
+            socket.emit('signed_in', user)
+          })
+        }
+      })
 
       socket.on('received_reservations', function(reservations) {
         reservations.forEach(r => {
@@ -22,10 +50,6 @@
 
       socket.on('enqueue', function(username) {
         createListItem(username)
-      })
-
-      window.addEventListener('DOMContentLoaded', () => {
-        socket.emit('loaded')
       })
 
       const createListItem = (value) => {

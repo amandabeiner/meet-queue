@@ -11,29 +11,26 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 })
 
+app.use(express.static(__dirname))
 app.get('*', function (req, res) {
   res.render('index.ejs')
 })
 
-app.use(express.static(__dirname))
 http.listen(8080, function () {
   console.log('listening on port 8080')
 })
 
 io.sockets.on('connection', function (socket) {
-  socket.on('loaded', async function () {
+  socket.on('signed_in', async function (user) {
+    socket.user = user
     const url = getUrlPath(socket)
     const existingReservations = await findReservations(url)
     socket.emit('received_reservations', existingReservations)
   })
 
-  socket.on('username', function (username) {
-    socket.username = username
-  })
-
   socket.on('enqueue', function () {
-    createReservation(socket.username, getUrlPath(socket))
-    io.emit('enqueue', socket.username)
+    createReservation(socket.user, getUrlPath(socket))
+    io.emit('enqueue', socket.user)
   })
 })
 
@@ -42,11 +39,15 @@ const getUrlPath = (socket) => {
 }
 
 const findReservations = async (urlPath) => {
+  const ONE_HOUR = 60 * 60 * 1000
+  const oneHourAgo = Date.now() - ONE_HOUR
   const collectionSnapshot = await admin
     .firestore()
     .collection('queues')
     .doc(urlPath)
     .collection('reservations')
+    .where('createdAt', '>', oneHourAgo)
+    .orderBy('createdAt', 'asc')
     .get()
 
   return collectionSnapshot.docs.map((d) => d.data())
