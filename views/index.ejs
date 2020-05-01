@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Meet Queue</title>
+    <link rel="stylesheet" type="text/css" href="./output.css">
+    <script src="../../socket.io/socket.io.js"></script>
+    <!-- <script src="http://code.jquery.com/jquery&#45;1.10.1.min.js"></script> -->
+  </head>
+  <body>
+    <h1>Next up:</h1>
+    <ul id="queue"></ul>
+    <button id="enqueue" onclick="socket.emit('enqueue')">Raise hand</button>
+    <script>
+      const socket = io.connect('http://localhost:8080')
+      const username = prompt('Who r u')
+      socket.emit('username', username)
+
+      socket.on('enqueue', function(username) {
+        document.getElementById('queue').append(username, document.createElement('li'))
+      })
+    </script>
+  </body>
+</html>
