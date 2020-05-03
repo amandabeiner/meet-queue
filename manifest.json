@@ -4,11 +4,23 @@
   "description": "Queueing system for Google Meet",
   "version": "0.0.1",
   "background": {
-    "scripts": ["socket.io.js"]
+    "page": "background.html",
+    "persistent": true
   },
   "browser_action": {
-    "default_popup": "views/index.html"
+    "default_popup": "auth.html"
   },
-   "content_security_policy": "script-src 'self' https://www.gstatic.com/;  object-src 'self'",
-  "permissions": ["activeTab", "debugger"]
+   "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://apis.google.com https://www.googleapis.com;  object-src 'self'",
+  "permissions": ["activeTab", "debugger", "identity"],
+  "oauth2": {
+    "client_id": "390532946027-88l9gde3l22dee5o7t6t0g5m8ajqmb8r.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgkXCd9wYtNAbDwSL5lS7OWI0jIbA8U5GhednrRKWvmjCa6qHhDRdUKRnNmlqnjSAQ7O0y7f1+GcnscRYDCs6hYHh9wiIOEIz5heQ3NDOHGW2exU1OXQP3OqFASzOlPbhzpiwY81OC1r46b+xOIE9LiCuxoYlQ6z/0jyiJNZxsqP28KBS6BdW6yimdQEggAeX/FWL2hiZ2PYS9+Bma4VTrswYKI0EIAGBmPzYJAAfpPeuWUxZWgfQVBrjo7PhLp1fOXYOvNF5qRltYDiAjCDoToazhPDIMiRmE4I79C8uhC05IAgoskKYwAukyCe8EAwG7qH7tFOA4Oax3TKK50VVtQIDAQAB"
+
 }
+ 

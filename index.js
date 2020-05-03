@@ -1,9 +1,9 @@
 const express = require('express')
-const bodyParser = require('body-parser')
-const admin = require('firebase-admin')
 const app = express()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
+const bodyParser = require('body-parser')
+const admin = require('firebase-admin')
 const url = require('url')
 require('dotenv').config()
 
@@ -12,19 +12,19 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 })
 
-app.use(express.static(__dirname))
-app.set('views', __dirname + '/views')
-app.engine('html', require('ejs').renderFile)
-app.set('view engine', 'html')
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-)
+// app.use(express.static(__dirname))
+// app.set('views', __dirname)
+// app.engine('html', require('ejs').renderFile)
+// app.set('view engine', 'html')
+// app.use(
+//   bodyParser.urlencoded({
+//     extended: true,
+//   })
+// )
 
-app.use(bodyParser.json())
+// app.use(bodyParser.json())
 app.get('*', function (req, res) {
-  res.render('index.html')
+  res.render('client.html')
 })
 
 http.listen(8080, function () {
@@ -32,10 +32,16 @@ http.listen(8080, function () {
 })
 
 io.sockets.on('connection', function (socket) {
-  socket.on('signed_in', async function (user) {
-    socket.user = user
-    const url = getUrlPath(socket)
-    const existingReservations = await findReservations(url)
+  socket.emit('connected')
+  socket.on('request_reservations', async function (user) {
+    console.log('in request reservations')
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      console.log(tabs)
+    })
+    // console.log(chrome.tabs.query)
+    // socket.user = user
+    // const url = getUrlPath(socket)
+    // const existingReservations = await findReservations(url)
     socket.emit('received_reservations', existingReservations)
   })
 
