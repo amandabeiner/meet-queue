@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "Meet Queue",
+  "description": "Queueing system for Google Meet",
+  "version": "0.0.1",
+  "background": {
+    "scripts": ["socket.io.js"]
+  },
+  "browser_action": {
+    "default_popup": "views/index.html"
+  },
+   "content_security_policy": "script-src 'self' https://www.gstatic.com/;  object-src 'self'",
+  "permissions": ["activeTab", "debugger"]
+}

@@ -1,4 +1,5 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 const admin = require('firebase-admin')
 const app = express()
 const http = require('http').Server(app)
@@ -12,8 +13,18 @@ admin.initializeApp({
 })
 
 app.use(express.static(__dirname))
+app.set('views', __dirname + '/views')
+app.engine('html', require('ejs').renderFile)
+app.set('view engine', 'html')
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+)
+
+app.use(bodyParser.json())
 app.get('*', function (req, res) {
-  res.render('index.ejs')
+  res.render('index.html')
 })
 
 http.listen(8080, function () {
