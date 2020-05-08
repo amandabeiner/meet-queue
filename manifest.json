@@ -4,7 +4,7 @@
   "description": "Queueing system for Google Meet",
   "version": "0.0.1",
   "background": {
-    "scripts": ["socket.io.min.js", "background.js"]
+    "scripts": ["firebase.js", "firebase.auth.js", "socket.io.min.js", "auth.js", "background.js"]
   },
   "web_accessible_resources": ["queue.html"],
   "browser_action": {},

@@ -1,25 +1,32 @@
-// var firebaseConfig = {
-//   apiKey: 'AIzaSyAGDcE1JIePpzJ66lRlIKDyY87aykZNjQ8',
-//   authDomain: 'meet-queue.firebaseapp.com',
-//   databaseURL: 'https://meet-queue.firebaseio.com',
-//   projectId: 'meet-queue',
-//   storageBucket: 'meet-queue.appspot.com',
-//   messagingSenderId: '539893296334',
-//   appId: '1:539893296334:web:b604f203bc04fe8825b49f',
-//   measurementId: 'G-19MMWPTZ20',
-// }
-//
-// firebase.initializeApp(firebaseConfig)
-//
-// const initApp = () => {
-//   firebase.auth().onAuthStateChanged((user) => {
-//     if (user) {
-//       chrome.browserAction.setPopup({
-//         popup: 'client.html',
-//       })
-//     }
-//   })
-// }
+const checkAuthStatus = () => {
+  const { currentUser } = firebase.auth()
+  return currentUser ? authSuccess(currentUser) : authRequest()
+}
+
+const authSuccess = (user) => {
+  chrome.tabs.query({ url: 'https://meet.google.com/*' }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, {
+      type: 'AUTH_SUCCESS',
+    })
+  })
+}
+
+const authRequest = () => {
+  chrome.tabs.query(activeTab, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, {
+      type: 'AUTH_REQUEST',
+    })
+  })
+}
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    console.log('state changed success')
+    authSuccess(user)
+  } else {
+    authRequest()
+  }
+})
 const socket = io.connect('http://localhost:8080')
 // chrome.runtime.onMessage.addListener((msg, _, sendResponse) => {
 //   switch (msg.type) {
@@ -49,9 +56,17 @@ socket.on('fetch_queue_success', (queue) => {
 chrome.runtime.onMessage.addListener((msg) => {
   switch (msg.type) {
     case 'ENQUEUE':
-      return socket.emit('enqueue', msg.data.user, msg.data.route)
+      return socket.emit(
+        'enqueue',
+        firebase.auth().currentUser.displayName,
+        msg.data.route
+      )
     case 'FETCH_QUEUE':
       return socket.emit('fetch_queue', msg.data.route)
+    case 'REQUEST_AUTH_STATUS':
+      return checkAuthStatus()
+    case 'SIGN_IN':
+      return startAuth()
   }
 })
 
@@ -60,4 +75,6 @@ chrome.browserAction.onClicked.addListener(() => {
     chrome.tabs.sendMessage(tabs[0].id, { type: 'CLICKED_BROWSER_ACTION' })
   })
 })
+
 const activeTab = { active: true, currentWindow: true }
+
