@@ -59,7 +59,6 @@ const findReservations = async (urlPath) => {
 }
 
 const createReservation = (username, urlpath) => {
-  console.log({ urlpath })
   admin
     .firestore()
     .collection('queues')
