@@ -12,24 +12,6 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 const provider = new firebase.auth.GoogleAuthProvider()
 
-// const checkAuthStatus = (callback) => {
-//   console.log({ callback })
-// const authButton = document.createElement('button')
-// authButton.setAttribute('id', 'auth-button')
-
-// firebase.auth().onAuthStateChanged((user) => {
-//   callback(user)
-// if (user) {
-//   chrome.tabs
-//
-// }
-// user
-//   ? (authButton.textContent = 'Sign out')
-//   : (authButton.textContent = 'Sign in with Google')
-// })
-// authButton.addEventListener('click', startSignIn, false)
-// }
-
 const startAuth = () => {
   return chrome.identity.getAuthToken({ interactive: true }, (token) => {
     return token ? signInWithIdentityToken(token) : signInWithPopup()
@@ -46,7 +28,6 @@ const signInWithIdentityToken = async (token) => {
 }
 
 const signInWithPopup = () => {
-  console.log('signing in with popup')
   return firebase.auth().signInWithPopup(provider)
 }
 

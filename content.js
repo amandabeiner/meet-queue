@@ -1,8 +1,7 @@
 chrome.runtime.onMessage.addListener(function (msg) {
-  console.log('got message')
   switch (msg.type) {
     case 'CLICKED_BROWSER_ACTION':
-      return addQueueIcon()
+      return toggleExtension()
     case 'ENQUEUED_SUCCESS':
       return createQueueItem(msg.data.user)
     case 'FETCH_QUEUE_SUCCESS':
@@ -54,10 +53,21 @@ const enqueueUser = () => {
   })
 }
 
-const addQueueIcon = () => {
+const toggleExtension = () => {
+  const queueOption = document.getElementById('extension-base')
+  if (!queueOption) {
+    initQueue()
+  }
+}
+const initQueue = () => {
   // Determine if the user is signed in
   requestAuthStatus()
 
+  // Attach queue options to the page
+  buildQueueIcon()
+}
+
+const buildQueueIcon = () => {
   // Google Meet's icon bar in the top right
   const iconBar = document.getElementsByClassName('NzPR9b')[0]
 
