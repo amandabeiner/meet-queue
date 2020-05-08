@@ -15,45 +15,33 @@ admin.initializeApp({
 // app.use(express.static(__dirname))
 // app.set('views', __dirname)
 // app.engine('html', require('ejs').renderFile)
-// app.set('view engine', 'html')
-// app.use(
-//   bodyParser.urlencoded({
-//     extended: true,
-//   })
-// )
+app.set('view engine', 'html') /
+  // app.use(
+  //   bodyParser.urlencoded({
+  //     extended: true,
+  //   })
+  // )
 
-// app.use(bodyParser.json())
-app.get('*', function (req, res) {
-  res.render('client.html')
-})
+  // app.use(bodyParser.json())
+  app.get('*', function (req, res) {
+    res.render('client.html')
+  })
 
 http.listen(8080, function () {
   console.log('listening on port 8080')
 })
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('connected')
-  socket.on('request_reservations', async function (user) {
-    console.log('in request reservations')
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      console.log(tabs)
-    })
-    // console.log(chrome.tabs.query)
-    // socket.user = user
-    // const url = getUrlPath(socket)
-    // const existingReservations = await findReservations(url)
-    socket.emit('received_reservations', existingReservations)
+  socket.on('fetch_queue', async function (url) {
+    const existingReservations = await findReservations(url)
+    socket.emit('fetch_queue_success', existingReservations)
   })
 
-  socket.on('enqueue', function () {
-    createReservation(socket.user, getUrlPath(socket))
-    io.emit('enqueue', socket.user)
+  socket.on('enqueue', function (user, url) {
+    createReservation(user, url)
+    io.emit('enqueue', user)
   })
 })
-
-const getUrlPath = (socket) => {
-  return url.parse(socket.handshake.headers.referer).path
-}
 
 const findReservations = async (urlPath) => {
   const ONE_HOUR = 60 * 60 * 1000
@@ -71,6 +59,7 @@ const findReservations = async (urlPath) => {
 }
 
 const createReservation = (username, urlpath) => {
+  console.log({ urlpath })
   admin
     .firestore()
     .collection('queues')
