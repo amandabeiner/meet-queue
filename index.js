@@ -2,9 +2,7 @@ const express = require('express')
 const app = express()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
-const bodyParser = require('body-parser')
 const admin = require('firebase-admin')
-const url = require('url')
 require('dotenv').config()
 
 admin.initializeApp({
@@ -12,34 +10,23 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 })
 
-// app.use(express.static(__dirname))
-// app.set('views', __dirname)
-// app.engine('html', require('ejs').renderFile)
-app.set('view engine', 'html') /
-  // app.use(
-  //   bodyParser.urlencoded({
-  //     extended: true,
-  //   })
-  // )
-
-  // app.use(bodyParser.json())
-  app.get('*', function (req, res) {
-    res.render('client.html')
-  })
-
 http.listen(8080, function () {
   console.log('listening on port 8080')
 })
 
 io.sockets.on('connection', function (socket) {
+  socket.on('auth_success', function (user) {
+    socket.user = user
+  })
+
   socket.on('fetch_queue', async function (url) {
     const existingReservations = await findReservations(url)
     socket.emit('fetch_queue_success', existingReservations)
   })
 
-  socket.on('enqueue', function (user, url) {
-    createReservation(user, url)
-    io.emit('enqueue', user)
+  socket.on('enqueue', function (url) {
+    createReservation(socket.user, url)
+    io.emit('enqueue', socket.user)
   })
 })
 

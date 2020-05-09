@@ -7,27 +7,9 @@ chrome.runtime.onMessage.addListener(function (msg) {
     case 'FETCH_QUEUE_SUCCESS':
       return msg.data.queue.map((q) => createQueueItem(q.username))
     case 'AUTH_SUCCESS':
-      console.log('made it into content.js')
       return authSuccess()
-    case 'AUTH_REQUEST':
-      return authRequired()
   }
 })
-const requestAuthStatus = () => {
-  chrome.runtime.sendMessage({
-    type: 'REQUEST_AUTH_STATUS',
-  })
-}
-
-const authRequired = () => {
-  // Hide enqueue button
-  const enqueueButton = document.getElementById('enqueue')
-  enqueueButton.style.display = 'none'
-
-  // Make sure auth button is visible
-  const authButton = document.getElementById('auth-button')
-  authButton.style.display = ''
-}
 
 const signInUser = () => {
   chrome.runtime.sendMessage({
@@ -36,8 +18,8 @@ const signInUser = () => {
 }
 
 const authSuccess = () => {
-  console.log('received auth success')
   // Make sure the enqueue button is visible
+  console.log('in auth success')
   const enqueueButton = document.getElementById('enqueue')
   enqueueButton.style.display = ''
 
@@ -60,8 +42,9 @@ const toggleExtension = () => {
   }
 }
 const initQueue = () => {
+  console.log('in init queue')
   // Determine if the user is signed in
-  requestAuthStatus()
+  signInUser()
 
   // Attach queue options to the page
   buildQueueIcon()
@@ -137,6 +120,7 @@ const buildQueue = () => {
   const enqueueButton = document.createElement('button')
   enqueueButton.setAttribute('id', 'enqueue')
   enqueueButton.innerText = 'Raise hand'
+  enqueueButton.style.display = 'none'
   enqueueButton.addEventListener('click', enqueueUser)
   dropdown.append(enqueueButton)
 

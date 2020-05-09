@@ -1,44 +1,46 @@
-var firebaseConfig = {
-  apiKey: 'AIzaSyAGDcE1JIePpzJ66lRlIKDyY87aykZNjQ8',
-  authDomain: 'meet-queue.firebaseapp.com',
-  databaseURL: 'https://meet-queue.firebaseio.com',
-  projectId: 'meet-queue',
-  storageBucket: 'meet-queue.appspot.com',
-  messagingSenderId: '539893296334',
-  appId: '1:539893296334:web:b604f203bc04fe8825b49f',
-  measurementId: 'G-19MMWPTZ20',
-}
+const CLIENT_ID =
+  '390532946027-h9t8vfp5c0hd0p2pnqvfj6t4otjh7c5i.apps.googleusercontent.com'
+const REDIRECT_URL = chrome.identity.getRedirectURL()
+const SCOPES = ['openid', 'email', 'profile']
+const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(
+  REDIRECT_URL
+)}&scope=${encodeURIComponent(SCOPES.join(' '))}`
+const VALIDATION_BASE_URL = 'https://www.googleapis.com/oauth2/v3/tokeninfo'
 
-firebase.initializeApp(firebaseConfig)
-const provider = new firebase.auth.GoogleAuthProvider()
-
-const startAuth = () => {
-  return chrome.identity.getAuthToken({ interactive: true }, (token) => {
-    return token ? signInWithIdentityToken(token) : signInWithPopup()
-  })
-}
-
-const signInWithIdentityToken = async (token) => {
-  const credential = firebase.auth.GoogleAuthProvider.credential(null, token)
-  try {
-    return firebase.auth().signInWithCredential(credential)
-  } catch (err) {
-    err.code === 'auth/invalid-credential' && clearCachedIdentityToken(token)
+const extractAccessToken = (redirectURI) => {
+  const match = redirectURI.match(/[#?](.*)/)
+  if (!match || match.length < 1) {
+    return null
   }
+
+  const params = new URLSearchParams(match[1].split('#')[0])
+  return params.get('access_token')
 }
 
-const signInWithPopup = () => {
-  return firebase.auth().signInWithPopup(provider)
+const getAccessToken = (fetchUserInfoFunction) => {
+  return chrome.identity.launchWebAuthFlow(
+    {
+      interactive: true,
+      url: AUTH_URL,
+    },
+    fetchUserInfoFunction
+  )
 }
 
-const clearCachedIdentityToken = (token) => {
-  return chrome.identity.removeCachedAuthToken({ token }, () => {
-    startAuth()
+const getUserInfo = async (redirectURI) => {
+  const accessToken = extractAccessToken(redirectURI)
+
+  const requestURL = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json'
+  const requestHeaders = new Headers()
+  requestHeaders.append('Authorization', 'Bearer ' + accessToken)
+  const driveRequest = new Request(requestURL, {
+    method: 'GET',
+    headers: requestHeaders,
   })
-}
 
-const startSignIn = () => {
-  const currentUser = firebase.auth().currentUser
-  return currentUser ? firebase.auth().signOut() : startAuth()
+  const response = await fetch(driveRequest)
+  if (response.status !== 200) {
+    throw response.status
+  }
+  return response.json()
 }
-
