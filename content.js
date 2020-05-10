@@ -20,11 +20,11 @@ const signInUser = () => {
 const authSuccess = () => {
   // Make sure the enqueue button is visible
   const enqueueButton = document.getElementById('enqueue')
-  enqueueButton.setAttribute('class', 'block')
+  enqueueButton.classList.remove('hidden')
 
   // Hide auth button
   const authButton = document.getElementById('auth-button')
-  authButton.setAttribute('class', 'hidden')
+  authButton.classList.add('hidden')
 }
 
 const enqueueUser = () => {
@@ -81,12 +81,12 @@ const toggleQueue = () => {
   // The Show/Hide queue button
   const toggleButton = document.getElementById('toggle-queue')
 
-  const queueIsHidden = dropdown.className.includes('hidden')
+  const queueIsHidden = dropdown.classList.contains('hidden')
   if (queueIsHidden) {
-    dropdown.setAttribute('class', dropdownVisibleStyles)
+    dropdown.classList.remove('hidden')
     toggleButton.src = chrome.extension.getURL('icon-green.png')
   } else {
-    dropdown.setAttribute('class', dropdownHiddenStyles)
+    dropdown.classList.add('hidden')
     toggleButton.src = chrome.extension.getURL('icon-gray.png')
   }
 }
@@ -102,15 +102,17 @@ const buildQueue = () => {
   // The dropdown that shows the current queue
   const dropdown = document.createElement('div')
   dropdown.setAttribute('id', 'queue-dropdown')
-  dropdown.setAttribute('class', 'absolute hidden bg-white')
+  dropdown.setAttribute('class', dropdownDefaultStyles)
 
   // Heading
   const heading = document.createElement('h1')
   heading.innerText = 'Next Up'
+  heading.setAttribute('class', 'text-sm font-bold mt-2')
+  dropdown.append(heading)
 
   // The queue list
   const queueList = document.createElement('ul')
-  queueList.setAttribute('class', 'list-none px-4')
+  queueList.setAttribute('class', 'list-none pt-2')
   queueList.setAttribute('id', 'queue')
   dropdown.append(queueList)
 
@@ -124,7 +126,7 @@ const buildQueue = () => {
   // The button to add yourself to the queue
   const enqueueButton = document.createElement('button')
   enqueueButton.setAttribute('id', 'enqueue')
-  enqueueButton.setAttribute('class', 'hidden')
+  enqueueButton.setAttribute('class', enqueueButtonDefaultStyles)
   enqueueButton.innerText = 'Raise hand'
   enqueueButton.addEventListener('click', enqueueUser)
   dropdown.append(enqueueButton)
@@ -133,6 +135,7 @@ const buildQueue = () => {
   const anchor = document.createElement('div')
   const extension = document.getElementById('extension-base')
   extension.append(anchor)
+
   // Add the dropdown to the DOM
   anchor.append(dropdown)
 

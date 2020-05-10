@@ -19042,6 +19042,14 @@ video {
   transition-delay: 1000ms;
 }
 
+.bg-teal {
+  background-color: '#00796b'
+}
+
+.mt-12-px {
+  margin-top: 12px
+}
+
 @media (min-width: 640px) {
   .sm\:space-y-0 > :not(template) ~ :not(template) {
     --space-y-reverse: 0;

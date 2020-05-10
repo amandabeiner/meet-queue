@@ -29,7 +29,6 @@ socket.on('fetch_queue_success', (queue) => {
 chrome.runtime.onMessage.addListener((msg) => {
   switch (msg.type) {
     case 'ENQUEUE':
-      console.log(chrome.identity)
       return socket.emit('enqueue', msg.data.route)
     case 'FETCH_QUEUE':
       return socket.emit('fetch_queue', msg.data.route)
