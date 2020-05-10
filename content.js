@@ -19,13 +19,12 @@ const signInUser = () => {
 
 const authSuccess = () => {
   // Make sure the enqueue button is visible
-  console.log('in auth success')
   const enqueueButton = document.getElementById('enqueue')
-  enqueueButton.style.display = ''
+  enqueueButton.setAttribute('class', 'block')
 
   // Hide auth button
   const authButton = document.getElementById('auth-button')
-  authButton.style.display = 'none'
+  authButton.setAttribute('class', 'hidden')
 }
 
 const enqueueUser = () => {
@@ -42,7 +41,6 @@ const toggleExtension = () => {
   }
 }
 const initQueue = () => {
-  console.log('in init queue')
   // Determine if the user is signed in
   signInUser()
 
@@ -57,10 +55,14 @@ const buildQueueIcon = () => {
   // Our addition to the icon bar
   const extension = document.createElement('div')
   extension.setAttribute('id', 'extension-base')
+  extension.setAttribute('class', 'flex flex-col justify-center')
 
   // Button to show and hide queue
-  const showQueueButton = document.createElement('button')
-  showQueueButton.innerText = 'Show Queue'
+  const showQueueButton = document.createElement('input')
+  showQueueButton.type = 'image'
+  showQueueButton.src = chrome.extension.getURL('icon-gray.png')
+  showQueueButton.setAttribute('class', 'h-6 mx-4')
+
   showQueueButton.setAttribute('id', 'toggle-queue')
   showQueueButton.addEventListener('click', toggleQueue)
 
@@ -79,12 +81,13 @@ const toggleQueue = () => {
   // The Show/Hide queue button
   const toggleButton = document.getElementById('toggle-queue')
 
-  if (dropdown.style.display === 'none') {
-    dropdown.style.display = ''
-    toggleButton.innerText = 'Hide Queue'
+  const queueIsHidden = dropdown.className.includes('hidden')
+  if (queueIsHidden) {
+    dropdown.setAttribute('class', dropdownVisibleStyles)
+    toggleButton.src = chrome.extension.getURL('icon-green.png')
   } else {
-    dropdown.style.display = 'none'
-    toggleButton.innerText = 'Show Queue'
+    dropdown.setAttribute('class', dropdownHiddenStyles)
+    toggleButton.src = chrome.extension.getURL('icon-gray.png')
   }
 }
 
@@ -94,18 +97,20 @@ const fetchQueue = () => {
     data: { route: window.location.pathname.substr(1) },
   })
 }
+
 const buildQueue = () => {
   // The dropdown that shows the current queue
   const dropdown = document.createElement('div')
   dropdown.setAttribute('id', 'queue-dropdown')
-  dropdown.style.position = 'absolute'
-  dropdown.style.display = 'none'
-  dropdown.style.backgroundColor = 'white'
+  dropdown.setAttribute('class', 'absolute hidden bg-white')
+
+  // Heading
+  const heading = document.createElement('h1')
+  heading.innerText = 'Next Up'
 
   // The queue list
   const queueList = document.createElement('ul')
-  queueList.style.listStyleType = 'none'
-  queueList.style.paddingLeft = '5px'
+  queueList.setAttribute('class', 'list-none px-4')
   queueList.setAttribute('id', 'queue')
   dropdown.append(queueList)
 
@@ -119,13 +124,17 @@ const buildQueue = () => {
   // The button to add yourself to the queue
   const enqueueButton = document.createElement('button')
   enqueueButton.setAttribute('id', 'enqueue')
+  enqueueButton.setAttribute('class', 'hidden')
   enqueueButton.innerText = 'Raise hand'
-  enqueueButton.style.display = 'none'
   enqueueButton.addEventListener('click', enqueueUser)
   dropdown.append(enqueueButton)
 
+  // A container for all of the above
+  const anchor = document.createElement('div')
+  const extension = document.getElementById('extension-base')
+  extension.append(anchor)
   // Add the dropdown to the DOM
-  document.getElementById('extension-base').append(dropdown)
+  anchor.append(dropdown)
 
   // Fetch data to populate it
   fetchQueue()

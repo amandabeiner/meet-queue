@@ -10,9 +10,11 @@
   "content_scripts": [
     {
       "matches": ["https://meet.google.com/*"],
-      "js": ["content.js"]
+      "js": ["styles.js", "content.js"],
+      "css": ["output.css"]
     }
   ],
+  "web_accessible_resources": ["icon-gray.png", "icon-green.png"],
    "content_security_policy": "script-src 'self'  https://apis.google.com https://www.googleapis.com;  object-src 'self'",
   "permissions": ["tabs", "activeTab", "debugger", "identity", "*://www.googleapis.com/*", "*://accounts.google.com/*"],
   "oauth2": {
