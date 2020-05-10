@@ -60,7 +60,7 @@ const buildQueueIcon = () => {
   // Button to show and hide queue
   const showQueueButton = document.createElement('input')
   showQueueButton.type = 'image'
-  showQueueButton.src = chrome.extension.getURL('icon-gray.png')
+  showQueueButton.src = chrome.extension.getURL('static/icon-gray.png')
   showQueueButton.setAttribute('class', 'h-6 mx-4')
 
   showQueueButton.setAttribute('id', 'toggle-queue')
@@ -84,10 +84,10 @@ const toggleQueue = () => {
   const queueIsHidden = dropdown.classList.contains('hidden')
   if (queueIsHidden) {
     dropdown.classList.remove('hidden')
-    toggleButton.src = chrome.extension.getURL('icon-green.png')
+    toggleButton.src = chrome.extension.getURL('static/icon-green.png')
   } else {
     dropdown.classList.add('hidden')
-    toggleButton.src = chrome.extension.getURL('icon-gray.png')
+    toggleButton.src = chrome.extension.getURL('static/icon-gray.png')
   }
 }
 

@@ -4,17 +4,17 @@
   "description": "Queueing system for Google Meet",
   "version": "0.0.1",
   "background": {
-    "scripts": ["socket.io.min.js", "auth.js", "background.js"]
+    "scripts": ["background/socket.io.min.js", "background/auth.js", "background/index.js"]
   },
   "browser_action": {},
   "content_scripts": [
     {
       "matches": ["https://meet.google.com/*"],
-      "js": ["styles.js", "content.js"],
-      "css": ["output.css"]
+      "js": ["content/styles.js", "content/index.js"],
+      "css": ["styles/output.css"]
     }
   ],
-  "web_accessible_resources": ["icon-gray.png", "icon-green.png"],
+  "web_accessible_resources": ["static/icon-gray.png", "static/icon-green.png"],
    "content_security_policy": "script-src 'self'  https://apis.google.com https://www.googleapis.com;  object-src 'self'",
   "permissions": ["tabs", "activeTab", "debugger", "identity", "*://www.googleapis.com/*", "*://accounts.google.com/*"],
   "oauth2": {
