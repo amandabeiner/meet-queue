@@ -16,7 +16,7 @@
   ],
   "web_accessible_resources": ["static/icon-gray.png", "static/icon-green.png"],
    "content_security_policy": "script-src 'self'  https://apis.google.com https://www.googleapis.com;  object-src 'self'",
-  "permissions": ["tabs", "activeTab", "debugger", "identity", "*://www.googleapis.com/*", "*://accounts.google.com/*"],
+  "permissions": ["tabs", "activeTab", "debugger", "identity", "*://www.googleapis.com/*", "*://accounts.google.com/*", "http://localhost/*"],
   "oauth2": {
     "client_id": "390532946027-88l9gde3l22dee5o7t6t0g5m8ajqmb8r.apps.googleusercontent.com",
     "scopes": [

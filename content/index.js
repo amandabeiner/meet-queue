@@ -25,6 +25,9 @@ const authSuccess = () => {
   // Hide auth button
   const authButton = document.getElementById('auth-button')
   authButton.classList.add('hidden')
+
+  // Fetch data to populate queue
+  fetchQueue()
 }
 
 const enqueueUser = () => {
@@ -138,9 +141,6 @@ const buildQueue = () => {
 
   // Add the dropdown to the DOM
   anchor.append(dropdown)
-
-  // Fetch data to populate it
-  fetchQueue()
 }
 
 const createQueueItem = (value) => {
