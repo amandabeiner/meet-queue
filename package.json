@@ -1,8 +1,11 @@
 {
   "name": "meet-queue",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "license": "MIT",
+  "engines": {
+    "node": "11.10.x"
+  },
   "dependencies": {
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -14,5 +17,8 @@
     "prettier": "^2.0.5",
     "socket.io": "^2.3.0",
     "tailwindcss": "^1.4.2"
+  },
+  "scripts": {
+    "start": "node server.js"
   }
 }
