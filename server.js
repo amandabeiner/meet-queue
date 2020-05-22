@@ -78,24 +78,15 @@ io.use((socket, next) => {
   } else {
     next(new Error('Invalid token'))
   }
-}).on('authenticated', function (socket) {
+}).on('connection', function (socket) {
   socket.on('auth_success', function (user) {
     socket.user = user
   })
-
   socket.on('enqueue', function (url) {
     createReservation(socket.user, url)
     io.emit('enqueue', socket.user)
   })
 })
-// io.sockets
-// .on(
-//   'connection',
-//   socketioJwt.authorize({
-//     secret: process.env.JWT_SECRET,
-//     timeout: 1500,
-//   })
-// )
 
 const findReservations = async (urlPath) => {
   const ONE_HOUR = 60 * 60 * 1000
